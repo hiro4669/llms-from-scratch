@@ -3,6 +3,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 
 
+"""
 tokenizer = tiktoken.get_encoding("gpt2")
 
 with open("the-verdict.txt", "r", encoding="utf-8") as f:
@@ -25,6 +26,7 @@ for i in range(1, context_size + 1):
     print(context, "---->", desired)
     # print(tokenizer.decode(context), "---->", tokenizer.decode([desired]))
 
+"""
 
 """ for test
 a = [1,2,3,4,5]
@@ -73,6 +75,8 @@ class GPTDatasetV1(Dataset):
             self.input_ids.append(torch.tensor(input_chunk))
             self.target_ids.append(torch.tensor(target_chunk))
 
+        print("total input_ids len = ", len(self.input_ids))
+
     def __len__(self):
         return len(self.input_ids)
 
@@ -98,6 +102,7 @@ class GPTDatasetV2(Dataset):
             target_chunk = token_ids[i + 1 : i + max_length + 1]
             self.input_ids.append(torch.tensor(input_chunk))
             self.target_ids.append(torch.tensor(target_chunk))
+
 
     def __len__(self):
         return len(self.input_ids)
@@ -132,20 +137,29 @@ def create_dataloader_v1(
 
 
 if __name__ == "__main__":
+    tokenizer = tiktoken.get_encoding("gpt2")
+
+    with open("the-verdict.txt", "r", encoding="utf-8") as f:
+        raw_text = f.read()
+
+    enc_text = tokenizer.encode(raw_text)
+
     dataloader = create_dataloader_v1(
-            raw_text, batch_size=1, max_length=4, stride=1, shuffle=False
-        )
-    
+        raw_text, batch_size=1, max_length=4, stride=1, shuffle=False
+    )
+
     print("---------- [ batch = 1 ]--------------------------")
     data_iter = iter(dataloader)
     first_batch = next(data_iter)
     print(first_batch)
-    
-    print(">>>>>>>>> original tokens >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
+    print("\n>>>>>>>>> original tokens >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
     print(enc_text[:50])
-    
+    print(len(enc_text))
+    print("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
     print("---------- [ batch = 8 ]--------------------------")
-    
+
     dataloader = create_dataloader_v1(
         raw_text, batch_size=8, max_length=4, stride=4, shuffle=False
     )
