@@ -88,16 +88,19 @@ if __name__ == "__main__":
 
     text_idx = 1
     target_probas_2 = probas[text_idx, [0, 1, 2], targets[text_idx]]
-    print("Text 1:", target_probas_2)
+    print("Text 2:", target_probas_2)
+    print()
 
     log_probas = torch.log(torch.cat((target_probas_1, target_probas_2)))
     print(log_probas)
 
     ave_log_probas = torch.mean(log_probas)
-    print(ave_log_probas)
+    print(ave_log_probas)  # ave_log_probsを０に近づけていくことが目標
 
+    print()
     neg_ave_log_probas = ave_log_probas * -1
     print("neg_ave_log_probs: ", neg_ave_log_probas)
+    print()
 
     print("Logit shape:", logits.shape)
     print("Target shape:", targets.shape)
