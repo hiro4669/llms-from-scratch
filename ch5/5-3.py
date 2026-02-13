@@ -10,6 +10,7 @@ sys.path.append(os.path.abspath("../ch4"))
 from gptmodel import GPTModel
 from dataloader import create_dataloader_v1
 from utils import generate_text_simple
+from utils import generate
 
 
 def text_to_token_ids(text, tokenizer):
@@ -206,6 +207,7 @@ train_losses, val_losses, tokens_seen = train_model_simple(
     tokenizer=tokenizer,
 )
 
+## from here 5.3
 model.to("cpu")
 model.eval()
 
@@ -217,4 +219,17 @@ token_ids = generate_text_simple(
     context_size=GPT_CONFIG_124M["context_length"],
 )
 
+print("Output text:\n", token_ids_to_text(token_ids, tokenizer))
+
+## from here 5.3.3
+print("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n")
+torch.manual_seed(123)
+token_ids = generate(
+    model=model,
+    idx=text_to_token_ids("Every effort moves you", tokenizer),
+    max_new_tokens=15,
+    context_size=GPT_CONFIG_124M["context_length"],
+    top_k=25,
+    temperature=1.4,
+)
 print("Output text:\n", token_ids_to_text(token_ids, tokenizer))

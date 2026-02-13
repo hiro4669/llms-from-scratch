@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import tiktoken
 
 vocab = {
     "closer": 0,
@@ -12,6 +13,13 @@ vocab = {
     "toward": 7,
     "you": 8,
 }
+
+
+def text_to_token_ids(text, tokenizer):
+    encoded = tokenizer.encode(text, allowed_special={"<|endoftext|>"})
+    encoded_tensor = torch.tensor(encoded).unsqueeze(0)
+    return encoded_tensor
+
 
 inverse_vocab = {v: k for k, v in vocab.items()}
 
@@ -57,3 +65,12 @@ print(new_logits)
 
 topk_probas = torch.softmax(new_logits, dim=0)
 print(topk_probas)
+
+
+tokenizer = tiktoken.get_encoding("gpt2")
+
+idx = text_to_token_ids("Every effort moves you", tokenizer)
+print(idx)
+print(idx.shape)
+idx_cond = idx[:, -24:]
+print(idx_cond)
