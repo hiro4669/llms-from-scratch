@@ -77,9 +77,6 @@ val_loader = create_dataloader_v1(
     num_workers=0,
 )
 
-print("train_loader len: ", len(train_loader))
-print("val_loader   len: ", len(val_loader))
-
 
 ## inputとtargetからクロスエントロピーを求めて返す.返り値の型はTensor
 def calc_loss_batch(input_batch, target_batch, model, device):
@@ -184,16 +181,8 @@ def generate_and_print_sample(model, tokenizer, device, start_context):
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-print(f"device = {device}")
 
 model.to(device)
-
-with torch.no_grad():
-    train_loss = calc_loss_loader(train_loader, model, device)
-    val_loss = calc_loss_loader(val_loader, model, device)
-
-print("Training loss:", train_loss)
-print("Validation loss:", val_loss)
 
 print("\n----------------------------------------\n")
 
@@ -216,3 +205,16 @@ train_losses, val_losses, tokens_seen = train_model_simple(
     start_context="Every effort moves you",
     tokenizer=tokenizer,
 )
+
+model.to("cpu")
+model.eval()
+
+tokenizer = tiktoken.get_encoding("gpt2")
+token_ids = generate_text_simple(
+    model=model,
+    idx=text_to_token_ids("Every effort moves you", tokenizer),
+    max_new_tokens=25,
+    context_size=GPT_CONFIG_124M["context_length"],
+)
+
+print("Output text:\n", token_ids_to_text(token_ids, tokenizer))
